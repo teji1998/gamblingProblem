@@ -1,78 +1,103 @@
-#!/bin/bash
+#!/bin/bash   
 
 echo "Welcome To Gambling Simulator"
 
-declare -a lucky
-declare -a unlucky
-
-#Declaring Constants
+#Declaring constants
 STAKE=100;
 BET=1;
 MAX_DAYS=28;
 
-totalPerDay=$((STAKE));
-finalAmt=0;
-newStake=0;
-stakeAmt=0;
-tempWin=0;
-tempLost=0;
-dayWin=0;
-dayLose=0;
 
-newStakePercent(){
-        stakePercentage=$(($newStake/2))
-        maxWin=$((newStake+stakePercentage));
-        maxLose=$((newStake-stakePercentage));
+totalPerDay=0
+winTemp=0
+loseTemp=0
+winDay=0
+loseDay=0
+winTotal=0
+loseTotal=0
+month=1
+
+#Unlucky condition
+unluckyCheck(){
+	if [[ $loseTemp -lt $newStake ]]
+	then
+		loseTemp=$(($newStake))
+		loseDay=$(($day))
+	fi
+}
+
+#Lucky condition
+luckyCheck(){
+	if [[ $winTemp -lt $newStake ]]
+	then
+		winTemp=$(($newStake))
+		winDay=$(($day))
+	fi
 }
 
 #Daily amount
 dailyCalculation(){
-    while [[ $totalPerDay -lt $maxWin && $totalPerDay -gt $maxLose ]]
-    do
-        result=$(($RANDOM%2))
-        if [[ $result -eq 1 ]]
-        then
-            ((totalPerDay++))
-        else
-            ((totalPerDay--))
-        fi
-    done
+	while [[ $totalPerDay -lt $maxWin && $totalPerDay -gt $maxLose ]]
+	do
+        	if [[ $(($RANDOM%2)) -eq 1 ]]
+        	then
+            		totalPerDay=$(($totalPerDay - $BET))
+        	else
+            		totalPerDay=$(($totalPerDay + $BET))
+        	fi
+    	done
+    	if [[ $totalPerDay -gt $newStake ]]
+    	then
+        	if [[ $(( $totalPerDay - $newStake )) -eq 1 ]]
+        	then
+			unluckyCheck
+            		loseTotal=$(( $loseTotal + $newStake))
+            		echo "At the End of day $day: $totalPerDay Lost $newStake"
+        	else
+			luckyCheck
+            		winTotal=$(( $winTotal + $newStake ))
+            		echo "At the End of day $day: $totalPerDay won $newStake"
+        	fi
+    	else
+		unluckyCheck
+        	loseTotal=$(( $loseTotal + $newStake))
+        	echo "At the End of day $day: $totalPerDay Lost $newStake"
+    	fi
 }
 
-#Total Amount
 totalAmount(){
-    for (( day=1; day<=$MAX_DAYS; day++ ))
-    do
-        newStake=$(($stakeAmt + $STAKE))
-        newStakePercent
-        dailyCalculation
-        wonOrLost $day
-  		stakeAmt=$(($totalPerDay))
-    done
+	totalPerDay=$(( $totalPerDay + $STAKE ))
+    	newStake=$(( $totalPerDay / 2 ))
+    	maxWin=$(( $totalPerDay + $newStake ))
+    	maxLose=$(( $totalPerDay - $newStake ))
+	dailyCalculation
 }
 
-#To find Luckiest or Unluckiest day
-wonOrLost(){
-    if [[ $newStake -lt $totalPerDay ]]
-    then
-        result=$(($totalPerDay - $newStake))
-        echo "Start: $newStake You won on Day"$1 $result "End: $totalPerDay"
-        if [[ $result -gt $tempWin ]]
-        then
-            tempWin=$(($result))
-            dayWin=$(($1))
-        fi
-    else
-        result2=$(($newStake - $totalPerDay))
-        echo "Start: $newStake You lost on Day"$1 $result2 "End: $totalPerDay"
-        if [[ $result2 -gt $tempLose ]]
-        then
-            tempLose=$(($result2))
-            dayLose=$(($1))
-        fi
-
-    fi
+play(){
+	for (( day=1; day<=MAX_DAYS; day++ ))
+	do
+		totalAmount
+	done
 }
 
-totalAmount
-echo -e "Luckiest Day " $dayWin "\nUnluckiest Day: " $dayLose
+print(){
+	echo "Your unluckiest day is $loseDay, You lost $loseTemp"
+     	echo "Your luckiest day is $winDay, You won $winTemp"
+}
+
+gameContinuation(){
+        echo "For month $month"
+        play
+	print
+	(( month++ ))
+        while [[ $winTotal -gt $loseTotal ]]
+        do
+        	echo "For month $month"
+            	play
+		print
+		((month++))
+        done
+	echo "You have extreme loss in month $(($month-1)), you lost $loseTotal"
+}
+
+gameContinuation
