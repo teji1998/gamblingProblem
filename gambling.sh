@@ -2,16 +2,25 @@
 
 echo "Welcome to Gambling Simulator"
 
-stake=100;
-bet=1;
+#initializing the constants
+STAKE=100;
+BET=1;
+MAX_WIN=150;
+MAX_LOSE=50;
 
-result=$((RANDOM%2))
+total=$(( STAKE ));
 
-if [[ $result -eq 1 ]]
-then
-	echo "You won 1 dollar"
-	total=$(($stake+1))
-else
-	echo "You lost 1 dollar"
-	total=$(($stake-1))
-fi
+#Condition for winning or losing the bet
+while [[ $total -le $MAX_WIN && $total -ge $MAXLOSE ]]
+do
+	result=$(( $RANDOM % 2 ))
+	if [[ $result -eq 1 ]]
+	then
+		echo " You won 1 dollar "
+		(( total++ ))
+	else
+		echo " You lost 1 dollar "
+		(( total-- ))
+	fi
+done
+
