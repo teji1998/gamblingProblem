@@ -10,18 +10,18 @@ MAX_DAYS=30;
 
 totalPerDay=$((STAKE));
 finalAmt=0;
-newStake=0;
 stakeAmt=0;
 
-newStakePercent(){
-    stakePercentage=$(( $newStake / 2))
-    maxWin=$(( newStake + stakePercentage ));
-    maxLose=$(( newStake - stakePercentage ));
+
+stakePercent(){
+    STAKE_PERCENTAGE=$(( ($STAKE / 100 ) * 50 ))
+    MAX_WIN=$(( $STAKE + $STAKE_PERCENTAGE ));
+    MAX_LOSE=$(( $STAKE - $STAKE_PERCENTAGE  ));
 }
 
 #Daily Amount
 dailyCalculation(){
-    while [[ $totalPerDay -lt $maxWin && $totalPerDay -gt $maxLose ]]
+    while [[ $totalPerDay -lt $MAX_WIN && $totalPerDay -gt $MAX_LOSE ]]
     do
         result=$(($RANDOM % 2))
         if [[ $result -eq 1 ]]
@@ -37,12 +37,11 @@ dailyCalculation(){
 totalAmount(){
     for (( day=1; day<=$MAX_DAYS; day++ ))
     do
-    newStake=$(( $stakeAmt + $STAKE))
-    newStakePercent
+    #newStake=$(( $stakeAmt + $STAkE))
+    stakePercent
     dailyCalculation
     wonOrLost $day
     dailyAmount[$day]=$(( $totalPerDay ))
-    stakeAmt=$(( $totalPerDay ))
     done
 }
 
@@ -55,11 +54,11 @@ printDailyAmt(){
 
 #total amount won or lost on a particular day
 wonOrLost(){
-    if [[ $newStake -lt $totalPerDay ]]
+    if [[ $STAKE -lt $totalPerDay ]]
     then
-        echo "Start: $newStake You won on Day"$1 $(( $totalPerDay - $newStake )) "End: $totalPerDay"
+        echo "Start: $STAKE You won on Day"$1 $(( $totalPerDay - $STAKE )) "End: $totalPerDay"
     else
-        echo "Start: $newStake You lost on Day"$1 $(( $newStake - $totalPerDay )) "End: $totalPerDay"
+        echo "Start: $STAKE You lost on Day"$1 $(( $STAKE - $totalPerDay )) "End: $totalPerDay"
     fi
 }
 totalAmount
