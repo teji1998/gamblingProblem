@@ -66,10 +66,10 @@ dailyCalculation(){
 }
 
 totalAmount(){
-	totalPerDay=$(( $totalPerDay + $STAKE ))
-    	newStake=$(( $totalPerDay / 2 ))
-    	maxWin=$(( $totalPerDay + $newStake ))
-    	maxLose=$(( $totalPerDay - $newStake ))
+	totalPerDay=$(( $totalPerDay+$STAKE ))
+    	newStake=$(( $STAKE / 2 ))
+    	maxWin=$(( $STAKE + $newStake ))
+    	maxLose=$(( $STAKE - $newStake ))
 	dailyCalculation
 }
 
@@ -84,20 +84,23 @@ print(){
 	echo "Your unluckiest day is $loseDay, You lost $loseTemp"
      	echo "Your luckiest day is $winDay, You won $winTemp"
 }
-
 gameContinuation(){
         echo "For month $month"
         play
 	print
 	(( month++ ))
-        while [[ $winTotal -gt $loseTotal ]]
-        do
-        	echo "For month $month"
-            	play
-		print
-		((month++))
-        done
-	echo "You have extreme loss in month $(($month-1)), you lost $loseTotal"
-}
+        if [ $winTotal -lt $loseTotal ]
+        then
+        	echo "Stop playing!"
+	else
+		read -p 'Enter 1 to continue playing OR Enter any other number to stop playing : ' num
+		if [ $num -eq 1 ]
+		then
+			gameContinuation
+		else
+			echo "Bye"
+		fi
+	fi
 
+}
 gameContinuation
