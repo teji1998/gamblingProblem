@@ -92,10 +92,17 @@ dailyCalculation(){
 
 totalAmount(){
 <<<<<<< HEAD
+<<<<<<< HEAD
 	totalPerDay=$(( $totalPerDay + $STAKE ))
     	newStake=$(( $totalPerDay / 2 ))
     	maxWin=$(( $totalPerDay + $newStake ))
     	maxLose=$(( $totalPerDay - $newStake ))
+=======
+	totalPerDay=$(( $totalPerDay+$STAKE ))
+    	newStake=$(( $STAKE / 2 ))
+    	maxWin=$(( $STAKE + $newStake ))
+    	maxLose=$(( $STAKE - $newStake ))
+>>>>>>> UC7_stopPlaying
 	dailyCalculation
 =======
     for (( day=1; day<=$MAX_DAYS; day++ ))
@@ -131,20 +138,23 @@ wonOrLost(){
     fi
 >>>>>>> UC5_daysWonOrLost
 }
-
 gameContinuation(){
         echo "For month $month"
         play
 	print
 	(( month++ ))
-        while [[ $winTotal -gt $loseTotal ]]
-        do
-        	echo "For month $month"
-            	play
-		print
-		((month++))
-        done
-	echo "You have extreme loss in month $(($month-1)), you lost $loseTotal"
-}
+        if [ $winTotal -lt $loseTotal ]
+        then
+        	echo "Stop playing!"
+	else
+		read -p 'Enter 1 to continue playing OR Enter any other number to stop playing : ' num
+		if [ $num -eq 1 ]
+		then
+			gameContinuation
+		else
+			echo "Bye"
+		fi
+	fi
 
+}
 gameContinuation
